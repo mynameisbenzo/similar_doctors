@@ -1,0 +1,153 @@
+{% load bootstrap3 %}
+{% load staticfiles %}
+{{ content|safe }}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<title>
+			Blog
+		</title>
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		{% bootstrap_css %}
+		{% bootstrap_javascript jquery=0 %}
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-120932750-1"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'UA-120932750-1');
+		</script>
+	</head>
+	<style>
+.panel-footer{
+	height:50px;
+}
+.star-ratings-css {
+  unicode-bidi: bidi-override;
+  color: #c5c5c5;
+  height: $starSize;
+  width: 100px;
+  margin: 0 auto;
+  position: relative;
+  padding: 0;
+  text-shadow: 0px 1px 0 #a2a2a2;
+  font-size: 25px;
+ }
+.star-ratings-css-top {
+    position: absolute;
+    color: #e7711b;
+    padding: 0;
+    z-index: 1;
+    display: block;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+.star-ratings-css-bottom {
+    position: absolute;
+    padding: 0;
+    display: block;
+    z-index: 0;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+	</style>
+	<body>
+		
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class = "container">
+			
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed"
+						data-toggle="collapse" data-target="#navbar"
+						aria-expanded="false" aria-controls="navbar">
+					</button>
+					<a class="navbar-brand" href="{% url 'index' %}">
+						Doctors
+					</a>
+				</div>
+				<!-- .nav-collapse -->
+			</div>
+		</nav>
+		
+		
+		<div class="container">
+			<div class="page-header">
+				{% block header %}
+				<h1>
+					Doctors
+				</h1>
+				{% endblock header %}
+			</div>
+			<div>
+				{% block content %}
+				<ul id ="doctorList">
+					<div class = "panel panel-default">
+						<div class="panel-heading">
+							<h3>
+								No doctors.
+							</h3>
+						</div>
+					</div>
+				</ul>
+<script>
+{% autoescape off %}
+var doctors = {{ doctors }};
+{% endautoescape %}
+function addDoctorsDetailed(){
+	var all_ratings = [];
+	Object.keys(doctors).forEach(function(key){
+		all_ratings.push(doctors[key].rating);
+	});
+	all_ratings = all_ratings.sort();
+	document.getElementById('doctorList').innerHTML = "";
+	while(all_ratings.length > 0){
+		var deleteMe = "";
+		for(var key in doctors){
+			if(doctors.hasOwnProperty(key)){
+				if(doctors[key].rating != all_ratings[all_ratings.length-1]) continue;
+				document.getElementById('doctorList').innerHTML += "<div class='panel panel-default'>" + 
+					"<div class='panel-heading'><h2>" + doctors[key]['name'] +
+					"</h2><small>" + doctors[key]['location'] + "</small>" +
+					"</div>" + "<a href='/doctor/"+key+"'><div class='panel-body'><h4>" + doctors[key]['description'] +
+					"</h4><div class='star-ratings-css'>" +
+					"</div><h3>Dr. "+ doctors[key]['name']+
+					" is a: </h3><ul id='doctor"+key+"'></ul></div></a>"+
+					"<div class='panel-footer'>"+ createStarRating(((doctors[key].rating/5).toFixed(2) * 100)) +"</div></div>";
+				var docList = document.getElementById('doctor'+key+'');
+				for(var i = 0; i < doctors[key].type.length; i++){
+					docList.innerHTML += "<li>" + doctors[key].type[i] + "</li>";
+				}
+			}
+			deleteMe = key;
+			all_ratings.pop();
+			break;
+		}
+		delete doctors[deleteMe];
+	}
+}
+addDoctorsDetailed();
+{% endblock content %}
+	function createStarRating(avg){
+		return "<div class='star-ratings-css'>" +
+				"<div class='star-ratings-css-top' style='width: "+ avg
+				+"%'><span>★</span>" +
+				"<span>★</span><span>★</span><span>★</span><span>★</span></div>" +
+				"<div class='star-ratings-css-bottom'><span>★</span><span>★</span>"+
+				"<span>★</span><span>★</span><span>★</span></div></div>";
+	}
+</script>
+			</div>
+		</div>
+	</body>
+</html>

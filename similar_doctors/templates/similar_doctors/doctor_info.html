@@ -1,0 +1,82 @@
+{% extends 'similar_doctors/index.html' %}
+{% load bootstrap3 %}
+
+{% block header %}
+<style>
+	.panel-body{
+		height:50px;
+	}
+</style>
+<h2>
+		{{ name }}
+</h2>
+<h3>
+	{{ location }}
+</h3>
+{% endblock header %}
+
+{% block content %}
+<h3>
+	{{ description }}
+</h3>
+<h4>
+	{{ type }}
+</h4>
+<h4>
+	<ul id="similar-docs">
+		<div class = "panel panel-default">
+			<div class="panel-heading">
+				<h2>
+					It's hard to find a doctor like {{ name }}.
+				</h2>
+			</div>
+		</div>
+	</ul>
+</h4>
+{% if similar|length > 0 %}
+<script>
+{% autoescape off %}
+	var similar = {{ similar }};
+{% endautoescape %}
+function addDoctorsSimilar(){
+	for(var key in similar){
+		if(similar.hasOwnProperty(key)) {
+			console.log('what');
+			break;
+		}else{ 
+			console.log('oh ok');
+			return;
+		}
+	}
+	if(similar == null) return;
+	console.log(similar);
+	document.getElementById('similar-docs').innerHTML = "";
+	var accu_ratings = [];
+	Object.keys(similar).forEach(function(key){
+		var norm = (similar[key].rating + similar[key].score)/5;
+		similar[key].score = norm;
+		accu_ratings.push(norm);
+	});
+	accu_ratings = accu_ratings.sort();
+	while(accu_ratings.length > 0){
+		for(var key in similar){
+			if(similar.hasOwnProperty(key)){
+				if(similar[key].score != accu_ratings[accu_ratings.length-1]) continue;
+				document.getElementById('similar-docs').innerHTML += "<div class='panel panel-default'>" + 
+					"<div class='panel-heading'><a href='/doctor/"+similar[key].id+"'><h2>" + similar[key]['name'] +
+					"</h2><small>" + similar[key]['location'] + "</small>" +
+					"</a></div>" + "<div class='panel-body'>"+ 
+					createStarRating(((similar[key].rating/5).toFixed(2) * 100)) +"</div>"+
+					"<div class='panel-footer'></div></div>";
+			}
+			accu_ratings.pop();
+			break;
+		}
+	}
+}
+addDoctorsSimilar();
+{% else %}
+<script>
+{% endif %}
+	
+{% endblock content %}
