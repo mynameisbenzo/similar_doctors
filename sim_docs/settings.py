@@ -25,7 +25,7 @@ SECRET_KEY = '=d+06!o1ybm=*$m3wgh&)5+qlp9et+_4ml197_qymp^=0_y8&w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -125,3 +125,32 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# django-bootstrap3 settings
+BOOTSTRAP3 ={
+	'include_jquery':True,
+}
+
+
+# heroku settings
+if os.getcwd() == '/app':
+	import dj_database_url
+	DATABASES = {
+		'default':dj_database_url.config(default='postgres://localhost')
+	}
+	
+	# honor the 'x-forwarded-proto' header request.is_secure()
+	SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PHOTO', 'https')
+	
+	# allow all host headers
+	ALLOWED_HOSTS = ['lh-django-blog.herokuapp.com']
+	
+	DEBUG = False
+	
+	# static asset configuration
+	BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+	STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+	STATICFILES_DIRS = [
+		os.path.join(BASE_DIR, 'static'),
+	]
