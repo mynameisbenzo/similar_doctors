@@ -8,7 +8,6 @@ def index(request):
 	doctors_query = Doctor.objects.all()
 	doctors = {}
 	for doctor in doctors_query:
-		# types = give_type_strings(doctor.type)
 		doctors[doctor.id] = makeJSONdoctor(doctor, True)
 	context={'doctors': doctors}
 	print(context)
