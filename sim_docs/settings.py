@@ -146,7 +146,7 @@ if os.getcwd() == '/app':
 	SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PHOTO', 'https')
 	
 	# allow all host headers
-	ALLOWED_HOSTS = ['']
+	ALLOWED_HOSTS = ['salty-peak-21861.herokuapp.com']
 	
 	# static asset configuration
 	BASE_DIR = os.path.dirname(os.path.abspath(__file__))
